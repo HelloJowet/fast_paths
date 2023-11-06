@@ -26,12 +26,12 @@ use crate::constants::{EdgeId, NodeId, INVALID_EDGE};
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FastGraph {
     num_nodes: usize,
-    pub(crate) ranks: Vec<usize>,
-    pub(crate) edges_fwd: Vec<FastGraphEdge>,
-    pub(crate) first_edge_ids_fwd: Vec<EdgeId>,
+    pub ranks: Vec<usize>,
+    pub edges_fwd: Vec<FastGraphEdge>,
+    pub first_edge_ids_fwd: Vec<EdgeId>,
 
-    pub(crate) edges_bwd: Vec<FastGraphEdge>,
-    pub(crate) first_edge_ids_bwd: Vec<EdgeId>,
+    pub edges_bwd: Vec<FastGraphEdge>,
+    pub first_edge_ids_bwd: Vec<EdgeId>,
 }
 
 impl FastGraph {
