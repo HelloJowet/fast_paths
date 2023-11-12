@@ -24,6 +24,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 pub use crate::constants::*;
 pub use crate::fast_graph::FastGraph;
+pub use crate::fast_graph::FastGraphEdge;
 pub use crate::fast_graph32::FastGraph32;
 pub use crate::fast_graph_builder::FastGraphBuilder;
 pub use crate::fast_graph_builder::Params;
