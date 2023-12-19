@@ -193,12 +193,12 @@ mod tests {
         // |         |
         // 3 -> 4 -> 5
         let mut g = PreparationGraph::new(6);
-        g.add_edge(0, 1, 1);
-        g.add_edge(1, 2, 1);
-        g.add_edge(0, 3, 10);
-        g.add_edge(3, 4, 1);
-        g.add_edge(4, 5, 1);
-        g.add_edge(5, 2, 1);
+        g.add_edge(0, 1, 1, 1);
+        g.add_edge(1, 2, 1, 1);
+        g.add_edge(0, 3, 10, 10);
+        g.add_edge(3, 4, 1, 1);
+        g.add_edge(4, 5, 1, 1);
+        g.add_edge(5, 2, 1, 1);
         let mut ws = WitnessSearch::new(g.get_num_nodes());
         ws.init(0, INVALID_NODE);
         assert_eq!(2, ws.find_max_weight(&g, 2, 2, 100));
@@ -218,7 +218,7 @@ mod tests {
         // 0 -> 1 -> 2 -> 3 -> 4
         let mut g = PreparationGraph::new(5);
         for i in 0..4 {
-            g.add_edge(i, i + 1, 1);
+            g.add_edge(i, i + 1, 1, 1);
         }
         let mut ws = WitnessSearch::new(g.get_num_nodes());
         ws.init(0, INVALID_NODE);
@@ -250,10 +250,10 @@ mod tests {
         // 0 -> 1 -> 2 -> 3
         //  \----------->/
         let mut g = PreparationGraph::new(4);
-        g.add_edge(0, 1, 1);
-        g.add_edge(1, 2, 1);
-        g.add_edge(2, 3, 1);
-        g.add_edge(0, 3, 4);
+        g.add_edge(0, 1, 1, 1);
+        g.add_edge(1, 2, 1, 1);
+        g.add_edge(2, 3, 1, 1);
+        g.add_edge(0, 3, 4, 4);
         let mut ws = WitnessSearch::new(g.get_num_nodes());
         ws.init(0, INVALID_NODE);
         // the shortest path weight is 3, but since we set the limit to 10 the alternative path
@@ -292,12 +292,12 @@ mod tests {
         // 100 <- 99 <- ... <- 3 -> 2 -> 1
         //                      \-> 0 ->/
         let mut g = PreparationGraph::new(101);
-        g.add_edge(3, 2, 100);
-        g.add_edge(2, 1, 100);
-        g.add_edge(3, 0, 50);
-        g.add_edge(0, 1, 50);
+        g.add_edge(3, 2, 100, 100);
+        g.add_edge(2, 1, 100, 100);
+        g.add_edge(3, 0, 50, 50);
+        g.add_edge(0, 1, 50, 50);
         for i in 3..100 {
-            g.add_edge(i, i + 1, 1);
+            g.add_edge(i, i + 1, 1, 1);
         }
         let mut ws = WitnessSearch::new(g.get_num_nodes());
         // going from 3 to 1 while skipping 2 requires travelling along the large weight edge 3->0
@@ -318,12 +318,12 @@ mod tests {
         // 100 <- 99 <- ... <- 3 -> 2 -> 1
         //                      \-> 0 ->/
         let mut g = PreparationGraph::new(101);
-        g.add_edge(3, 2, 100);
-        g.add_edge(2, 1, 100);
-        g.add_edge(3, 0, 1);
-        g.add_edge(0, 1, 99);
+        g.add_edge(3, 2, 100, 100);
+        g.add_edge(2, 1, 100, 100);
+        g.add_edge(3, 0, 1, 1);
+        g.add_edge(0, 1, 99, 99);
         for i in 3..100 {
-            g.add_edge(i, i + 1, 1);
+            g.add_edge(i, i + 1, 1, 1);
         }
         let mut ws = WitnessSearch::new(g.get_num_nodes());
         // going from 3 to 1 while skipping 2 requires travelling the large weight edge 0->1 so

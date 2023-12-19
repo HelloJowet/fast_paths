@@ -17,7 +17,7 @@
  * under the License.
  */
 
-use crate::constants::Weight;
+use crate::constants::{Length, Weight};
 use crate::constants::{NodeId, INVALID_NODE};
 use crate::input_graph::InputGraph;
 
@@ -41,13 +41,13 @@ impl PreparationGraph {
     pub fn from_input_graph(input_graph: &InputGraph) -> Self {
         let mut graph = PreparationGraph::new(input_graph.get_num_nodes());
         for e in input_graph.get_edges() {
-            graph.add_edge(e.from, e.to, e.weight);
+            graph.add_edge(e.from, e.to, e.weight, e.length);
         }
         graph
     }
 
-    pub fn add_edge(&mut self, from: NodeId, to: NodeId, weight: Weight) {
-        self.add_edge_or_shortcut(from, to, weight, INVALID_NODE);
+    pub fn add_edge(&mut self, from: NodeId, to: NodeId, weight: Weight, length: Length) {
+        self.add_edge_or_shortcut(from, to, weight, length, INVALID_NODE);
     }
 
     pub fn add_edge_or_shortcut(
@@ -55,11 +55,12 @@ impl PreparationGraph {
         from: NodeId,
         to: NodeId,
         weight: Weight,
+        length: Length,
         center_node: NodeId,
     ) {
         self.assert_valid_node_id(to);
-        self.out_edges[from].push(Arc::new(to, weight, center_node));
-        self.in_edges[to].push(Arc::new(from, weight, center_node));
+        self.out_edges[from].push(Arc::new(to, weight, length, center_node));
+        self.in_edges[to].push(Arc::new(from, weight, length, center_node));
     }
 
     pub fn add_or_reduce_edge(
@@ -67,12 +68,13 @@ impl PreparationGraph {
         from: NodeId,
         to: NodeId,
         weight: Weight,
+        length: Length,
         center_node: NodeId,
     ) {
         if self.reduce_edge(from, to, weight, center_node) {
             return;
         }
-        self.add_edge_or_shortcut(from, to, weight, center_node);
+        self.add_edge_or_shortcut(from, to, weight, length, center_node);
     }
 
     fn reduce_edge(
@@ -158,14 +160,16 @@ impl PreparationGraph {
 pub struct Arc {
     pub adj_node: NodeId,
     pub weight: Weight,
+    pub length: Length,
     pub center_node: NodeId,
 }
 
 impl Arc {
-    pub fn new(adj_node: NodeId, weight: Weight, center_node: NodeId) -> Self {
+    pub fn new(adj_node: NodeId, weight: Weight, length: Length, center_node: NodeId) -> Self {
         Arc {
             adj_node,
             weight,
+            length,
             center_node,
         }
     }
@@ -178,10 +182,10 @@ mod tests {
     #[test]
     fn add_and_remove_edges() {
         let mut g = PreparationGraph::new(4);
-        g.add_edge(0, 1, 1);
-        g.add_edge(0, 2, 1);
-        g.add_edge(0, 3, 1);
-        g.add_edge(2, 3, 1);
+        g.add_edge(0, 1, 1, 1);
+        g.add_edge(0, 2, 1, 1);
+        g.add_edge(0, 3, 1, 1);
+        g.add_edge(2, 3, 1, 1);
         assert_eq!(adj_nodes(g.get_out_edges(0)), vec![1, 2, 3]);
         assert_eq!(adj_nodes(g.get_in_edges(3)), vec![0, 2]);
 
@@ -198,8 +202,8 @@ mod tests {
     fn add_or_remove_edge() {
         // 0 -> 1
         let mut g = PreparationGraph::new(3);
-        g.add_edge(0, 1, 10);
-        g.add_or_reduce_edge(0, 1, 6, INVALID_NODE);
+        g.add_edge(0, 1, 10, 10);
+        g.add_or_reduce_edge(0, 1, 6, 6, INVALID_NODE);
         assert_eq!(1, g.get_out_edges(0).len());
         assert_eq!(6, g.get_out_edges(0)[0].weight);
         assert_eq!(1, g.get_in_edges(1).len());
@@ -210,10 +214,10 @@ mod tests {
     fn disconnect() {
         // 0 <-> 1 <-> 2
         let mut g = PreparationGraph::new(4);
-        g.add_edge(1, 0, 1);
-        g.add_edge(1, 2, 1);
-        g.add_edge(0, 1, 1);
-        g.add_edge(2, 1, 1);
+        g.add_edge(1, 0, 1, 1);
+        g.add_edge(1, 2, 1, 1);
+        g.add_edge(0, 1, 1, 1);
+        g.add_edge(2, 1, 1, 1);
         assert_eq!(vec![0, 2], adj_nodes(g.get_out_edges(1)));
         assert_eq!(vec![0, 2], adj_nodes(g.get_in_edges(1)));
         g.disconnect(1);

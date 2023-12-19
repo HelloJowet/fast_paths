@@ -17,8 +17,7 @@
  * under the License.
  */
 
-use crate::constants::NodeId;
-use crate::constants::Weight;
+use crate::constants::{Length, NodeId, Weight};
 use crate::fast_graph_builder::Params;
 use crate::preparation_graph::PreparationGraph;
 use crate::witness_search::WitnessSearch;
@@ -73,6 +72,7 @@ pub fn handle_shortcuts<F>(
         witness_search.init(in_node, node);
         for j in 0..graph.out_edges[node].len() {
             let weight = graph.in_edges[node][i].weight + graph.out_edges[node][j].weight;
+            let length = graph.in_edges[node][i].length + graph.out_edges[node][j].length;
             let out_node = graph.out_edges[node][j].adj_node;
             // no need to find the actual weight of a witness path as long as we can be sure
             // that there is some witness with weight smaller or equal to the removed direct
@@ -82,7 +82,10 @@ pub fn handle_shortcuts<F>(
             if max_witness_weight <= weight {
                 continue;
             }
-            handle_shortcut(graph, Shortcut::new(in_node, out_node, node, weight))
+            handle_shortcut(
+                graph,
+                Shortcut::new(in_node, out_node, node, weight, length),
+            )
         }
     }
 }
@@ -92,6 +95,7 @@ fn add_shortcut(graph: &mut PreparationGraph, shortcut: Shortcut) {
         shortcut.from,
         shortcut.to,
         shortcut.weight,
+        shortcut.length,
         shortcut.center_node,
     );
 }
@@ -102,15 +106,23 @@ pub struct Shortcut {
     to: NodeId,
     center_node: NodeId,
     weight: Weight,
+    length: Length,
 }
 
 impl Shortcut {
-    pub fn new(from: NodeId, to: NodeId, center_node: NodeId, weight: Weight) -> Self {
+    pub fn new(
+        from: NodeId,
+        to: NodeId,
+        center_node: NodeId,
+        weight: Weight,
+        length: Length,
+    ) -> Self {
         Shortcut {
             from,
             to,
             center_node,
             weight,
+            length,
         }
     }
 }
@@ -126,16 +138,16 @@ mod tests {
         // 0 -> 2 -> 3
         // 1 ->/ \-> 4
         let mut g = PreparationGraph::new(5);
-        g.add_edge(0, 2, 1);
-        g.add_edge(1, 2, 2);
-        g.add_edge(2, 3, 3);
-        g.add_edge(2, 4, 1);
+        g.add_edge(0, 2, 1, 1);
+        g.add_edge(1, 2, 2, 2);
+        g.add_edge(2, 3, 3, 3);
+        g.add_edge(2, 4, 1, 1);
         let shortcuts = calc_shortcuts(&mut g, 2);
         let expected_shortcuts = vec![
-            Shortcut::new(0, 3, 2, 4),
-            Shortcut::new(0, 4, 2, 2),
-            Shortcut::new(1, 3, 2, 5),
-            Shortcut::new(1, 4, 2, 3),
+            Shortcut::new(0, 3, 2, 4, 4),
+            Shortcut::new(0, 4, 2, 2, 2),
+            Shortcut::new(1, 3, 2, 5, 5),
+            Shortcut::new(1, 4, 2, 3, 3),
         ];
         assert_eq!(expected_shortcuts, shortcuts);
     }
@@ -145,10 +157,10 @@ mod tests {
         // 0 -> 1 -> 2
         //  \-> 3 ->/
         let mut g = PreparationGraph::new(4);
-        g.add_edge(0, 1, 1);
-        g.add_edge(1, 2, 1);
-        g.add_edge(0, 3, 1);
-        g.add_edge(3, 2, 1);
+        g.add_edge(0, 1, 1, 1);
+        g.add_edge(1, 2, 1, 1);
+        g.add_edge(0, 3, 1, 1);
+        g.add_edge(3, 2, 1, 1);
         let shortcuts = calc_shortcuts(&mut g, 1);
         assert_eq!(0, shortcuts.len());
     }
@@ -159,14 +171,14 @@ mod tests {
         // |  /
         // 3 -
         let mut g = PreparationGraph::new(4);
-        g.add_edge(0, 1, 10);
-        g.add_edge(1, 2, 1);
-        g.add_edge(0, 3, 1);
-        g.add_edge(3, 1, 1);
+        g.add_edge(0, 1, 10, 10);
+        g.add_edge(1, 2, 1, 1);
+        g.add_edge(0, 3, 1, 1);
+        g.add_edge(3, 1, 1, 1);
         let _shortcuts = calc_shortcuts(&mut g, 1);
         // performance: there is no need for a shortcut 0->1->2, because there is already the
         // (required) shortcut 3->1->2
-        let _expected_shortcuts = vec![Shortcut::new(3, 2, 1, 2)];
+        let _expected_shortcuts = vec![Shortcut::new(3, 2, 1, 2, 2)];
         // todo: handle this case for better performance (less shortcuts)
         //        assert_eq!(expected_shortcuts, handler.shortcuts);
     }
@@ -177,13 +189,13 @@ mod tests {
         // |  /   \  |
         // 3 --->--- 4
         let mut g = PreparationGraph::new(5);
-        g.add_edge(0, 1, 1);
-        g.add_edge(1, 2, 1);
-        g.add_edge(0, 3, 1);
-        g.add_edge(3, 1, 5);
-        g.add_edge(1, 4, 4);
-        g.add_edge(3, 4, 3);
-        g.add_edge(4, 2, 1);
+        g.add_edge(0, 1, 1, 1);
+        g.add_edge(1, 2, 1, 1);
+        g.add_edge(0, 3, 1, 1);
+        g.add_edge(3, 1, 5, 5);
+        g.add_edge(1, 4, 4, 4);
+        g.add_edge(3, 4, 3, 3);
+        g.add_edge(4, 2, 1, 1);
         let mut witness_search = WitnessSearch::new(g.get_num_nodes());
         node_contractor::contract_node(&mut g, &mut witness_search, 1, usize::MAX);
         // there should be a shortcut 0->2, but no shortcuts 0->4, 3->2
@@ -202,11 +214,11 @@ mod tests {
         //      |
         //      4
         let mut g = PreparationGraph::new(6);
-        g.add_edge(0, 1, 1);
-        g.add_edge(1, 2, 1);
-        g.add_edge(2, 5, 1);
-        g.add_edge(3, 1, 1);
-        g.add_edge(1, 4, 1);
+        g.add_edge(0, 1, 1, 1);
+        g.add_edge(1, 2, 1, 1);
+        g.add_edge(2, 5, 1, 1);
+        g.add_edge(3, 1, 1, 1);
+        g.add_edge(1, 4, 1, 1);
         let mut witness_search = WitnessSearch::new(g.get_num_nodes());
         let priorities = vec![
             calc_relevance(

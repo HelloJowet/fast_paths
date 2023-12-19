@@ -29,8 +29,7 @@ use rand::Rng;
 
 use serde::{Deserialize, Serialize};
 
-use crate::constants::NodeId;
-use crate::constants::Weight;
+use crate::constants::{Length, NodeId, Weight};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct InputGraph {
@@ -110,12 +109,18 @@ impl InputGraph {
         Ok(())
     }
 
-    pub fn add_edge(&mut self, from: NodeId, to: NodeId, weight: Weight) -> usize {
-        self.do_add_edge(from, to, weight, false)
+    pub fn add_edge(&mut self, from: NodeId, to: NodeId, weight: Weight, length: Length) -> usize {
+        self.do_add_edge(from, to, weight, length, false)
     }
 
-    pub fn add_edge_bidir(&mut self, from: NodeId, to: NodeId, weight: Weight) -> usize {
-        self.do_add_edge(from, to, weight, true)
+    pub fn add_edge_bidir(
+        &mut self,
+        from: NodeId,
+        to: NodeId,
+        weight: Weight,
+        length: Length,
+    ) -> usize {
+        self.do_add_edge(from, to, weight, length, true)
     }
 
     pub fn get_edges(&self) -> &Vec<Edge> {
@@ -183,7 +188,14 @@ impl InputGraph {
         }
     }
 
-    fn do_add_edge(&mut self, from: NodeId, to: NodeId, weight: Weight, bidir: bool) -> usize {
+    fn do_add_edge(
+        &mut self,
+        from: NodeId,
+        to: NodeId,
+        weight: Weight,
+        length: Length,
+        bidir: bool,
+    ) -> usize {
         if self.frozen {
             panic!("Graph is frozen already, for further changes first use thaw()");
         }
@@ -202,9 +214,9 @@ impl InputGraph {
             return 0;
         }
         self.num_nodes = cmp::max(self.num_nodes, cmp::max(from, to) + 1);
-        self.edges.push(Edge::new(from, to, weight));
+        self.edges.push(Edge::new(from, to, weight, length));
         if bidir {
-            self.edges.push(Edge::new(to, from, weight));
+            self.edges.push(Edge::new(to, from, weight, length));
         }
         if bidir {
             2
@@ -224,7 +236,7 @@ impl InputGraph {
             // limit max weight, but otherwise allow duplicates, loops etc. to make sure clean-up
             // inside InputGraph works correctly
             let weight = rng.gen_range(1, 100);
-            edge_count += result.add_edge(tail, head, weight);
+            edge_count += result.add_edge(tail, head, weight, weight as u32);
             if edge_count == num_edges {
                 break;
             }
@@ -241,7 +253,7 @@ impl InputGraph {
             let s: String = line.unwrap();
             if s.starts_with("a ") {
                 let (from, to, weight) = InputGraph::read_arc_line(index, &s);
-                g.add_edge(from, to, weight);
+                g.add_edge(from, to, weight, weight as u32);
             } else {
                 continue;
             }
@@ -301,7 +313,7 @@ impl InputGraph {
                     s
                 );
                 // we convert 1-based node IDs from DIMACS to 0-based node IDs
-                g.add_edge(from - 1, to - 1, weight);
+                g.add_edge(from - 1, to - 1, weight, weight as u32);
                 curr_edges += 1;
             } else {
                 panic!(
@@ -351,11 +363,17 @@ pub struct Edge {
     pub from: NodeId,
     pub to: NodeId,
     pub weight: Weight,
+    pub length: Length,
 }
 
 impl Edge {
-    pub fn new(from: NodeId, to: NodeId, weight: Weight) -> Edge {
-        Edge { from, to, weight }
+    pub fn new(from: NodeId, to: NodeId, weight: Weight, length: Length) -> Edge {
+        Edge {
+            from,
+            to,
+            weight,
+            length,
+        }
     }
 
     pub fn unit_test_output_string(&self) -> String {
@@ -371,7 +389,7 @@ mod tests {
     #[should_panic]
     fn panic_if_not_frozen_get_edges() {
         let mut g = InputGraph::new();
-        g.add_edge(0, 1, 3);
+        g.add_edge(0, 1, 3, 3);
         g.get_edges();
     }
 
@@ -379,7 +397,7 @@ mod tests {
     #[should_panic]
     fn panic_if_not_frozen_get_num_edges() {
         let mut g = InputGraph::new();
-        g.add_edge(0, 1, 3);
+        g.add_edge(0, 1, 3, 3);
         g.get_num_edges();
     }
 
@@ -387,7 +405,7 @@ mod tests {
     #[should_panic]
     fn panic_if_not_frozen_get_num_nodes() {
         let mut g = InputGraph::new();
-        g.add_edge(0, 1, 3);
+        g.add_edge(0, 1, 3, 3);
         g.get_num_nodes();
     }
 
@@ -395,20 +413,20 @@ mod tests {
     #[should_panic]
     fn panic_if_frozen_add_edge() {
         let mut g = InputGraph::new();
-        g.add_edge(0, 1, 3);
+        g.add_edge(0, 1, 3, 3);
         g.freeze();
-        g.add_edge(2, 5, 4);
+        g.add_edge(2, 5, 4, 4);
     }
 
     #[test]
     fn freeze_and_thaw() {
         let mut g = InputGraph::new();
-        g.add_edge(0, 5, 10);
-        g.add_edge(0, 5, 5);
+        g.add_edge(0, 5, 10, 10);
+        g.add_edge(0, 5, 5, 5);
         g.freeze();
         assert_eq!(1, g.get_num_edges());
         g.thaw();
-        g.add_edge(0, 5, 1);
+        g.add_edge(0, 5, 1, 1);
         g.freeze();
         assert_eq!(1, g.get_num_edges());
         assert_eq!(1, g.get_edges()[0].weight);
@@ -417,9 +435,9 @@ mod tests {
     #[test]
     fn num_nodes() {
         let mut g = InputGraph::new();
-        g.add_edge(7, 1, 2);
-        g.add_edge(5, 6, 4);
-        g.add_edge(11, 8, 3);
+        g.add_edge(7, 1, 2, 2);
+        g.add_edge(5, 6, 4, 4);
+        g.add_edge(11, 8, 3, 3);
         g.freeze();
         assert_eq!(12, g.get_num_nodes());
     }
@@ -427,9 +445,9 @@ mod tests {
     #[test]
     fn skips_loops() {
         let mut g = InputGraph::new();
-        g.add_edge(0, 1, 3);
-        g.add_edge(4, 4, 2);
-        g.add_edge(2, 5, 4);
+        g.add_edge(0, 1, 3, 3);
+        g.add_edge(4, 4, 2, 2);
+        g.add_edge(2, 5, 4, 4);
         g.freeze();
         assert_eq!(2, g.get_num_edges());
     }
@@ -437,9 +455,9 @@ mod tests {
     #[test]
     fn skips_zero_weight_edges() {
         let mut g = InputGraph::new();
-        g.add_edge(0, 1, 5);
-        g.add_edge(1, 2, 0);
-        g.add_edge(2, 3, 3);
+        g.add_edge(0, 1, 5, 5);
+        g.add_edge(1, 2, 0, 0);
+        g.add_edge(2, 3, 3, 3);
         g.freeze();
         assert_eq!(2, g.get_num_edges());
     }
@@ -447,12 +465,12 @@ mod tests {
     #[test]
     fn skips_duplicate_edges() {
         let mut g = InputGraph::new();
-        g.add_edge(0, 1, 7);
-        g.add_edge(2, 3, 5);
-        g.add_edge(0, 2, 3);
-        g.add_edge(0, 1, 2);
-        g.add_edge(4, 6, 9);
-        g.add_edge(0, 1, 4);
+        g.add_edge(0, 1, 7, 7);
+        g.add_edge(2, 3, 5, 5);
+        g.add_edge(0, 2, 3, 3);
+        g.add_edge(0, 1, 2, 2);
+        g.add_edge(4, 6, 9, 9);
+        g.add_edge(0, 1, 4, 4);
         g.freeze();
         assert_eq!(4, g.get_num_edges());
         // edges should be sorted and duplicates should be removed keeping only the ones with
@@ -468,15 +486,15 @@ mod tests {
     #[test]
     fn skips_duplicate_edges_more() {
         let mut g = InputGraph::new();
-        g.add_edge(1, 3, 43);
-        g.add_edge(3, 2, 90);
-        g.add_edge(3, 2, 88);
-        g.add_edge(2, 3, 87);
-        g.add_edge(3, 0, 75);
-        g.add_edge(0, 2, 45);
-        g.add_edge(1, 3, 71);
-        g.add_edge(4, 3, 5);
-        g.add_edge(1, 3, 91);
+        g.add_edge(1, 3, 43, 43);
+        g.add_edge(3, 2, 90, 90);
+        g.add_edge(3, 2, 88, 88);
+        g.add_edge(2, 3, 87, 87);
+        g.add_edge(3, 0, 75, 75);
+        g.add_edge(0, 2, 45, 45);
+        g.add_edge(1, 3, 71, 71);
+        g.add_edge(4, 3, 5, 5);
+        g.add_edge(1, 3, 91, 91);
         g.freeze();
         assert_eq!(6, g.get_num_edges());
         let weights = g

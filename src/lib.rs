@@ -352,9 +352,9 @@ mod tests {
     #[test]
     fn save_to_and_load_from_disk() {
         let mut g = InputGraph::new();
-        g.add_edge(0, 5, 6);
-        g.add_edge(5, 2, 1);
-        g.add_edge(2, 3, 4);
+        g.add_edge(0, 5, 6, 6);
+        g.add_edge(5, 2, 1, 1);
+        g.add_edge(2, 3, 4, 4);
         g.freeze();
         let fast_graph = prepare(&g);
         save_to_disk(&fast_graph, "example.fp").expect("writing to disk failed");
@@ -368,9 +368,9 @@ mod tests {
     #[test]
     fn save_to_and_load_from_disk_32() {
         let mut g = InputGraph::new();
-        g.add_edge(0, 5, 6);
-        g.add_edge(5, 2, 1);
-        g.add_edge(2, 3, 4);
+        g.add_edge(0, 5, 6, 6);
+        g.add_edge(5, 2, 1, 1);
+        g.add_edge(2, 3, 4, 4);
         g.freeze();
         let fast_graph = prepare(&g);
         save_to_disk32(&fast_graph, "example32.fp").expect("writing to disk failed");

@@ -22,6 +22,7 @@ use std::convert::TryFrom;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::constants::Length;
 use crate::fast_graph::FastGraphEdge;
 use crate::FastGraph;
 
@@ -73,6 +74,7 @@ pub struct FastGraphEdge32 {
     pub base_node: u32,
     pub adj_node: u32,
     pub weight: u32,
+    pub length: Length,
     pub replaced_in_edge: u32,
     pub replaced_out_edge: u32,
 }
@@ -100,6 +102,7 @@ fn usize_to_u32_edge(edge: &FastGraphEdge) -> FastGraphEdge32 {
         base_node: usize_to_u32(edge.base_node),
         adj_node: usize_to_u32(edge.adj_node),
         weight: usize_to_u32(edge.weight),
+        length: edge.length,
         replaced_in_edge: usize_to_u32(edge.replaced_in_edge),
         replaced_out_edge: usize_to_u32(edge.replaced_out_edge),
     }
@@ -126,6 +129,7 @@ fn u32_to_usize_edge(edge: &FastGraphEdge32) -> FastGraphEdge {
         base_node: u32_to_usize(edge.base_node),
         adj_node: u32_to_usize(edge.adj_node),
         weight: u32_to_usize(edge.weight),
+        length: edge.length,
         replaced_in_edge: u32_to_usize(edge.replaced_in_edge),
         replaced_out_edge: u32_to_usize(edge.replaced_out_edge),
     }
@@ -143,16 +147,24 @@ mod tests {
         let num_nodes = 5;
         let ranks = vec![286, 45, 480_001, std::usize::MAX, 4468];
         let edges_fwd = vec![
-            FastGraphEdge::new(std::usize::MAX, 598, 48, std::usize::MAX, std::usize::MAX),
+            FastGraphEdge::new(
+                std::usize::MAX,
+                598,
+                48,
+                48,
+                std::usize::MAX,
+                std::usize::MAX,
+            ),
             FastGraphEdge::new(
                 std::usize::MAX,
                 std::usize::MAX,
                 std::usize::MAX,
+                std::u32::MAX,
                 4,
                 std::usize::MAX,
             ),
         ];
-        let edges_bwd = vec![FastGraphEdge::new(0, 1, 3, 4, std::usize::MAX)];
+        let edges_bwd = vec![FastGraphEdge::new(0, 1, 3, 3, 4, std::usize::MAX)];
         let first_edge_ids_fwd = vec![1, std::usize::MAX, std::usize::MAX];
         let first_edge_ids_bwd = vec![1, std::usize::MAX, 5, std::usize::MAX, 9, 10];
 
