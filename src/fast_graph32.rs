@@ -132,6 +132,7 @@ fn u32_to_usize_edge(edge: &FastGraphEdge32) -> FastGraphEdge {
         length: edge.length,
         replaced_in_edge: u32_to_usize(edge.replaced_in_edge),
         replaced_out_edge: u32_to_usize(edge.replaced_out_edge),
+        child_edges: Vec::new(),
     }
 }
 
@@ -154,6 +155,7 @@ mod tests {
                 48,
                 std::usize::MAX,
                 std::usize::MAX,
+                Vec::new(),
             ),
             FastGraphEdge::new(
                 std::usize::MAX,
@@ -162,9 +164,18 @@ mod tests {
                 std::u32::MAX,
                 4,
                 std::usize::MAX,
+                Vec::new(),
             ),
         ];
-        let edges_bwd = vec![FastGraphEdge::new(0, 1, 3, 3, 4, std::usize::MAX)];
+        let edges_bwd = vec![FastGraphEdge::new(
+            0,
+            1,
+            3,
+            3,
+            4,
+            std::usize::MAX,
+            Vec::new(),
+        )];
         let first_edge_ids_fwd = vec![1, std::usize::MAX, std::usize::MAX];
         let first_edge_ids_bwd = vec![1, std::usize::MAX, 5, std::usize::MAX, 9, 10];
 
