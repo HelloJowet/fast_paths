@@ -112,6 +112,7 @@ impl FastGraphBuilder {
                     out_edge.length,
                     out_edge.center_node,
                     INVALID_EDGE,
+                    Vec::new(),
                 ));
             }
             self.fast_graph.first_edge_ids_fwd[rank + 1] = self.fast_graph.get_num_out_edges();
@@ -125,6 +126,7 @@ impl FastGraphBuilder {
                     in_edge.length,
                     in_edge.center_node,
                     INVALID_EDGE,
+                    Vec::new(),
                 ));
             }
             self.fast_graph.first_edge_ids_bwd[rank + 1] = self.fast_graph.get_num_in_edges();
@@ -180,6 +182,7 @@ impl FastGraphBuilder {
                     out_edge.length,
                     out_edge.center_node,
                     INVALID_EDGE,
+                    Vec::new(),
                 ));
             }
             self.fast_graph.first_edge_ids_fwd[rank + 1] = self.fast_graph.get_num_out_edges();
@@ -192,6 +195,7 @@ impl FastGraphBuilder {
                     in_edge.length,
                     in_edge.center_node,
                     INVALID_EDGE,
+                    Vec::new(),
                 ));
             }
             self.fast_graph.first_edge_ids_bwd[rank + 1] = self.fast_graph.get_num_in_edges();

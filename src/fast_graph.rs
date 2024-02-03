@@ -82,7 +82,7 @@ impl FastGraph {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FastGraphEdge {
     // todo: the base_node is 'redundant' for the routing query so to say, but makes the implementation easier for now
     // and can still be removed at a later time, we definitely need this information on original
@@ -94,6 +94,7 @@ pub struct FastGraphEdge {
     pub length: Length,
     pub replaced_in_edge: EdgeId,
     pub replaced_out_edge: EdgeId,
+    pub child_edges: Vec<EdgeId>,
 }
 
 impl FastGraphEdge {
@@ -104,6 +105,7 @@ impl FastGraphEdge {
         length: Length,
         replaced_edge1: EdgeId,
         replaced_edge2: EdgeId,
+        child_edges: Vec<EdgeId>,
     ) -> Self {
         FastGraphEdge {
             base_node,
@@ -112,6 +114,7 @@ impl FastGraphEdge {
             length,
             replaced_in_edge: replaced_edge1,
             replaced_out_edge: replaced_edge2,
+            child_edges: child_edges,
         }
     }
 
