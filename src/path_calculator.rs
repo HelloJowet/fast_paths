@@ -266,7 +266,7 @@ impl PathCalculator {
         result
     }
 
-    fn unpack_fwd(graph: &FastGraph, nodes: &mut Vec<NodeId>, edge_id: EdgeId, reverse: bool) {
+    pub fn unpack_fwd(graph: &FastGraph, nodes: &mut Vec<NodeId>, edge_id: EdgeId, reverse: bool) {
         if !graph.edges_fwd[edge_id].is_shortcut() {
             nodes.push(graph.edges_fwd[edge_id].base_node);
             return;
@@ -300,7 +300,7 @@ impl PathCalculator {
         }
     }
 
-    fn unpack_bwd(graph: &FastGraph, nodes: &mut Vec<NodeId>, edge_id: EdgeId, reverse: bool) {
+    pub fn unpack_bwd(graph: &FastGraph, nodes: &mut Vec<NodeId>, edge_id: EdgeId, reverse: bool) {
         if !graph.edges_bwd[edge_id].is_shortcut() {
             nodes.push(graph.edges_bwd[edge_id].adj_node);
             return;
