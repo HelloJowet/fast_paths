@@ -182,10 +182,10 @@ mod tests {
     #[test]
     fn add_and_remove_edges() {
         let mut g = PreparationGraph::new(4);
-        g.add_edge(0, 1, 1, 1);
-        g.add_edge(0, 2, 1, 1);
-        g.add_edge(0, 3, 1, 1);
-        g.add_edge(2, 3, 1, 1);
+        g.add_edge(0, 1, 1, 1.0);
+        g.add_edge(0, 2, 1, 1.0);
+        g.add_edge(0, 3, 1, 1.0);
+        g.add_edge(2, 3, 1, 1.0);
         assert_eq!(adj_nodes(g.get_out_edges(0)), vec![1, 2, 3]);
         assert_eq!(adj_nodes(g.get_in_edges(3)), vec![0, 2]);
 
@@ -202,8 +202,8 @@ mod tests {
     fn add_or_remove_edge() {
         // 0 -> 1
         let mut g = PreparationGraph::new(3);
-        g.add_edge(0, 1, 10, 10);
-        g.add_or_reduce_edge(0, 1, 6, 6, INVALID_NODE);
+        g.add_edge(0, 1, 10, 10.0);
+        g.add_or_reduce_edge(0, 1, 6, 6.0, INVALID_NODE);
         assert_eq!(1, g.get_out_edges(0).len());
         assert_eq!(6, g.get_out_edges(0)[0].weight);
         assert_eq!(1, g.get_in_edges(1).len());
@@ -214,10 +214,10 @@ mod tests {
     fn disconnect() {
         // 0 <-> 1 <-> 2
         let mut g = PreparationGraph::new(4);
-        g.add_edge(1, 0, 1, 1);
-        g.add_edge(1, 2, 1, 1);
-        g.add_edge(0, 1, 1, 1);
-        g.add_edge(2, 1, 1, 1);
+        g.add_edge(1, 0, 1, 1.0);
+        g.add_edge(1, 2, 1, 1.0);
+        g.add_edge(0, 1, 1, 1.0);
+        g.add_edge(2, 1, 1, 1.0);
         assert_eq!(vec![0, 2], adj_nodes(g.get_out_edges(1)));
         assert_eq!(vec![0, 2], adj_nodes(g.get_in_edges(1)));
         g.disconnect(1);

@@ -407,7 +407,7 @@ mod tests {
             0,
             1,
             3,
-            3,
+            3.0,
             INVALID_EDGE,
             INVALID_EDGE,
             Vec::new(),
@@ -425,18 +425,18 @@ mod tests {
             0,
             1,
             2,
-            2,
+            2.0,
             INVALID_EDGE,
             INVALID_EDGE,
             Vec::new(),
         ));
         g.edges_fwd
-            .push(FastGraphEdge::new(0, 2, 5, 5, 0, 0, Vec::new()));
+            .push(FastGraphEdge::new(0, 2, 5, 5.0, 0, 0, Vec::new()));
         g.edges_bwd.push(FastGraphEdge::new(
             2,
             1,
             3,
-            3,
+            3.0,
             INVALID_EDGE,
             INVALID_EDGE,
             Vec::new(),

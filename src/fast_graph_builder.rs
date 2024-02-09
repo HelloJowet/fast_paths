@@ -362,8 +362,8 @@ mod tests {
     fn calc_path_linear_bwd_only() {
         // 2->0->1
         let mut g = InputGraph::new();
-        g.add_edge(2, 0, 9, 9);
-        g.add_edge(0, 1, 49, 49);
+        g.add_edge(2, 0, 9, 9.0);
+        g.add_edge(0, 1, 49, 49.0);
         g.freeze();
         let fast_graph = prepare_with_order(&g, &vec![0, 1, 2]).unwrap();
         assert_path(&fast_graph, 2, 1, 58, vec![2, 0, 1]);
@@ -373,8 +373,8 @@ mod tests {
     fn calc_path_linear_fwd_only() {
         // 1->0->2
         let mut g = InputGraph::new();
-        g.add_edge(1, 0, 9, 9);
-        g.add_edge(0, 2, 49, 49);
+        g.add_edge(1, 0, 9, 9.0);
+        g.add_edge(0, 2, 49, 49.0);
         g.freeze();
         let fast_graph = prepare_with_order(&g, &vec![0, 1, 2]).unwrap();
         assert_path(&fast_graph, 1, 2, 58, vec![1, 0, 2]);
@@ -386,11 +386,11 @@ mod tests {
         //  /          |
         // 0 - 1 - 2 - 3
         let mut g = InputGraph::new();
-        g.add_edge_bidir(0, 1, 5, 5);
-        g.add_edge_bidir(1, 2, 3, 3);
-        g.add_edge_bidir(2, 3, 2, 2);
-        g.add_edge_bidir(3, 4, 6, 6);
-        g.add_edge(0, 4, 2, 2);
+        g.add_edge_bidir(0, 1, 5, 5.0);
+        g.add_edge_bidir(1, 2, 3, 3.0);
+        g.add_edge_bidir(2, 3, 2, 2.0);
+        g.add_edge_bidir(3, 4, 6, 6.0);
+        g.add_edge(0, 4, 2, 2.0);
         g.freeze();
 
         let fast_graph = prepare_with_order(&g, &vec![0, 1, 2, 3, 4]).unwrap();
@@ -408,13 +408,13 @@ mod tests {
         // |    |
         // 3  - 1
         let mut g = InputGraph::new();
-        g.add_edge(0, 2, 1, 1);
-        g.add_edge(0, 4, 9, 9);
-        g.add_edge(1, 3, 3, 3);
-        g.add_edge(2, 1, 8, 8);
-        g.add_edge(3, 0, 4, 4);
-        g.add_edge(3, 1, 8, 8);
-        g.add_edge(4, 2, 4, 4);
+        g.add_edge(0, 2, 1, 1.0);
+        g.add_edge(0, 4, 9, 9.0);
+        g.add_edge(1, 3, 3, 3.0);
+        g.add_edge(2, 1, 8, 8.0);
+        g.add_edge(3, 0, 4, 4.0);
+        g.add_edge(3, 1, 8, 8.0);
+        g.add_edge(4, 2, 4, 4.0);
         g.freeze();
 
         let fast_graph = prepare_with_order(&g, &vec![0, 1, 2, 3, 4]).unwrap();
@@ -442,11 +442,11 @@ mod tests {
         // 0 -> 1 -> 2 <- 5
         // 3 -> 4 ->/
         let mut input_graph = InputGraph::new();
-        input_graph.add_edge(0, 1, 3, 3);
-        input_graph.add_edge(1, 2, 4, 4);
-        input_graph.add_edge(3, 4, 2, 2);
-        input_graph.add_edge(4, 2, 3, 3);
-        input_graph.add_edge(5, 2, 2, 2);
+        input_graph.add_edge(0, 1, 3, 3.0);
+        input_graph.add_edge(1, 2, 4, 4.0);
+        input_graph.add_edge(3, 4, 2, 2.0);
+        input_graph.add_edge(4, 2, 3, 3.0);
+        input_graph.add_edge(5, 2, 2, 2.0);
         input_graph.freeze();
         let fast_graph = prepare(&input_graph);
         let mut path_calculator = create_calculator(&fast_graph);
@@ -536,10 +536,10 @@ mod tests {
         // 0 <- 1 <- 2
         // 3 <- 4 <-/
         let mut input_graph = InputGraph::new();
-        input_graph.add_edge(1, 0, 3, 3);
-        input_graph.add_edge(2, 1, 4, 4);
-        input_graph.add_edge(4, 3, 2, 2);
-        input_graph.add_edge(2, 4, 3, 3);
+        input_graph.add_edge(1, 0, 3, 3.0);
+        input_graph.add_edge(2, 1, 4, 4.0);
+        input_graph.add_edge(4, 3, 2, 2.0);
+        input_graph.add_edge(2, 4, 3, 3.0);
         input_graph.freeze();
         let fast_graph = prepare(&input_graph);
         let mut path_calculator = create_calculator(&fast_graph);
@@ -585,14 +585,14 @@ mod tests {
         // 0 -- 1 -- 2 -- 3 -- 4
         // 5 -- 6 --/ \-- 7 -- 8
         let mut input_graph = InputGraph::new();
-        input_graph.add_edge_bidir(0, 1, 1, 1);
-        input_graph.add_edge_bidir(1, 2, 2, 2);
-        input_graph.add_edge_bidir(2, 3, 3, 3);
-        input_graph.add_edge_bidir(3, 4, 4, 4);
-        input_graph.add_edge_bidir(5, 6, 5, 5);
-        input_graph.add_edge_bidir(6, 2, 6, 6);
-        input_graph.add_edge_bidir(2, 7, 7, 7);
-        input_graph.add_edge_bidir(7, 8, 8, 8);
+        input_graph.add_edge_bidir(0, 1, 1, 1.0);
+        input_graph.add_edge_bidir(1, 2, 2, 2.0);
+        input_graph.add_edge_bidir(2, 3, 3, 3.0);
+        input_graph.add_edge_bidir(3, 4, 4, 4.0);
+        input_graph.add_edge_bidir(5, 6, 5, 5.0);
+        input_graph.add_edge_bidir(6, 2, 6, 6.0);
+        input_graph.add_edge_bidir(2, 7, 7, 7.0);
+        input_graph.add_edge_bidir(7, 8, 8, 8.0);
         input_graph.freeze();
         let fast_graph = prepare(&input_graph);
         let mut path_calculator = create_calculator(&fast_graph);

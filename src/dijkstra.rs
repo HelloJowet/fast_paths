@@ -169,18 +169,18 @@ mod tests {
         // |         |  \ |
         // 1 -> 2 -> 3 -> 4
         let mut g = PreparationGraph::new(10);
-        g.add_edge(0, 1, 1, 1);
-        g.add_edge(1, 2, 1, 1);
-        g.add_edge(2, 3, 1, 1);
-        g.add_edge(3, 4, 20, 20);
-        g.add_edge(0, 5, 5, 5);
-        g.add_edge(5, 6, 1, 1);
-        g.add_edge(6, 4, 20, 20);
-        g.add_edge(6, 3, 20, 20);
-        g.add_edge(5, 7, 5, 5);
-        g.add_edge(7, 8, 1, 1);
-        g.add_edge(8, 9, 1, 1);
-        g.add_edge(9, 4, 1, 1);
+        g.add_edge(0, 1, 1, 1.0);
+        g.add_edge(1, 2, 1, 1.0);
+        g.add_edge(2, 3, 1, 1.0);
+        g.add_edge(3, 4, 20, 20.0);
+        g.add_edge(0, 5, 5, 5.0);
+        g.add_edge(5, 6, 1, 1.0);
+        g.add_edge(6, 4, 20, 20.0);
+        g.add_edge(6, 3, 20, 20.0);
+        g.add_edge(5, 7, 5, 5.0);
+        g.add_edge(7, 8, 1, 1.0);
+        g.add_edge(8, 9, 1, 1.0);
+        g.add_edge(9, 4, 1, 1.0);
         let mut d = Dijkstra::new(g.get_num_nodes());
         assert_no_path(&mut d, &g, 4, 0);
         assert_path(&mut d, &g, 4, 4, 0, vec![4]);
@@ -195,10 +195,10 @@ mod tests {
         // |    |
         // 2 -> 3
         let mut g = PreparationGraph::new(4);
-        g.add_edge(0, 1, 10, 10);
-        g.add_edge(0, 2, 1, 1);
-        g.add_edge(2, 3, 1, 1);
-        g.add_edge(3, 1, 1, 1);
+        g.add_edge(0, 1, 10, 10.0);
+        g.add_edge(0, 2, 1, 1.0);
+        g.add_edge(2, 3, 1, 1.0);
+        g.add_edge(3, 1, 1, 1.0);
         let mut d = Dijkstra::new(g.get_num_nodes());
         assert_path(&mut d, &g, 0, 1, 3, vec![0, 2, 3, 1]);
     }
@@ -213,16 +213,16 @@ mod tests {
         //            \
         //             8 -> 9 -> 10
         let mut g = PreparationGraph::new(11);
-        g.add_edge(0, 1, 1, 1);
-        g.add_edge(1, 2, 1, 1);
-        g.add_edge(1, 3, 1, 1);
-        g.add_edge(3, 4, 1, 1);
-        g.add_edge(3, 6, 1, 1);
-        g.add_edge(6, 7, 1, 1);
-        g.add_edge(3, 5, 1, 1);
-        g.add_edge(3, 8, 1, 1);
-        g.add_edge(8, 9, 1, 1);
-        g.add_edge(9, 10, 1, 1);
+        g.add_edge(0, 1, 1, 1.0);
+        g.add_edge(1, 2, 1, 1.0);
+        g.add_edge(1, 3, 1, 1.0);
+        g.add_edge(3, 4, 1, 1.0);
+        g.add_edge(3, 6, 1, 1.0);
+        g.add_edge(6, 7, 1, 1.0);
+        g.add_edge(3, 5, 1, 1.0);
+        g.add_edge(3, 8, 1, 1.0);
+        g.add_edge(8, 9, 1, 1.0);
+        g.add_edge(9, 10, 1, 1.0);
         let mut d = Dijkstra::new(g.get_num_nodes());
         assert_path(&mut d, &g, 0, 1, 1, vec![0, 1]);
         assert_path(&mut d, &g, 0, 2, 2, vec![0, 1, 2]);

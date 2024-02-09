@@ -82,16 +82,16 @@ mod tests {
         //      |    |
         //      7 -> 8
         let mut g = InputGraph::new();
-        g.add_edge(0, 1, 6, 6);
-        g.add_edge(0, 4, 1, 1);
-        g.add_edge(4, 5, 1, 1);
-        g.add_edge(5, 7, 1, 1);
-        g.add_edge(7, 8, 1, 1);
-        g.add_edge(8, 6, 1, 1);
-        g.add_edge(6, 3, 1, 1);
-        g.add_edge(3, 1, 1, 1);
-        g.add_edge(1, 3, 1, 1);
-        g.add_edge(5, 6, 4, 4);
+        g.add_edge(0, 1, 6, 6.0);
+        g.add_edge(0, 4, 1, 1.0);
+        g.add_edge(4, 5, 1, 1.0);
+        g.add_edge(5, 7, 1, 1.0);
+        g.add_edge(7, 8, 1, 1.0);
+        g.add_edge(8, 6, 1, 1.0);
+        g.add_edge(6, 3, 1, 1.0);
+        g.add_edge(3, 1, 1, 1.0);
+        g.add_edge(1, 3, 1, 1.0);
+        g.add_edge(5, 6, 4, 4.0);
         g.freeze();
         let mut fw = FloydWarshall::new(g.get_num_nodes());
         fw.prepare(&g);
