@@ -20,7 +20,7 @@
 pub type NodeId = usize;
 pub type EdgeId = usize;
 pub type Weight = usize;
-pub type Length = f32;
+pub type Length = f64;
 
 pub const INVALID_NODE: NodeId = std::usize::MAX;
 pub const INVALID_EDGE: EdgeId = std::usize::MAX;

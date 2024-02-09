@@ -236,7 +236,7 @@ impl InputGraph {
             // limit max weight, but otherwise allow duplicates, loops etc. to make sure clean-up
             // inside InputGraph works correctly
             let weight = rng.gen_range(1, 100);
-            edge_count += result.add_edge(tail, head, weight, weight as f32);
+            edge_count += result.add_edge(tail, head, weight, weight as f64);
             if edge_count == num_edges {
                 break;
             }
@@ -253,7 +253,7 @@ impl InputGraph {
             let s: String = line.unwrap();
             if s.starts_with("a ") {
                 let (from, to, weight) = InputGraph::read_arc_line(index, &s);
-                g.add_edge(from, to, weight, weight as f32);
+                g.add_edge(from, to, weight, weight as f64);
             } else {
                 continue;
             }
@@ -313,7 +313,7 @@ impl InputGraph {
                     s
                 );
                 // we convert 1-based node IDs from DIMACS to 0-based node IDs
-                g.add_edge(from - 1, to - 1, weight, weight as f32);
+                g.add_edge(from - 1, to - 1, weight, weight as f64);
                 curr_edges += 1;
             } else {
                 panic!(

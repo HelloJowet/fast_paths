@@ -159,7 +159,7 @@ mod tests {
                 std::usize::MAX,
                 std::usize::MAX,
                 std::usize::MAX,
-                std::f32::MAX,
+                std::f64::MAX,
                 4,
                 std::usize::MAX,
             ),
