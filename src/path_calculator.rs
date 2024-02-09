@@ -403,15 +403,8 @@ mod tests {
     fn unpack_fwd_single() {
         // 0 -> 1
         let mut g = FastGraph::new(2);
-        g.edges_fwd.push(FastGraphEdge::new(
-            0,
-            1,
-            3,
-            3.0,
-            INVALID_EDGE,
-            INVALID_EDGE,
-            Vec::new(),
-        ));
+        g.edges_fwd
+            .push(FastGraphEdge::new(0, 1, 3, 3.0, INVALID_EDGE, INVALID_EDGE));
         let mut nodes = vec![];
         PathCalculator::unpack_fwd(&g, &mut nodes, 0, false);
         assert_eq!(nodes, vec![0]);
@@ -421,26 +414,11 @@ mod tests {
     fn unpack_fwd_simple() {
         // 0 -> 1 -> 2
         let mut g = FastGraph::new(3);
-        g.edges_fwd.push(FastGraphEdge::new(
-            0,
-            1,
-            2,
-            2.0,
-            INVALID_EDGE,
-            INVALID_EDGE,
-            Vec::new(),
-        ));
         g.edges_fwd
-            .push(FastGraphEdge::new(0, 2, 5, 5.0, 0, 0, Vec::new()));
-        g.edges_bwd.push(FastGraphEdge::new(
-            2,
-            1,
-            3,
-            3.0,
-            INVALID_EDGE,
-            INVALID_EDGE,
-            Vec::new(),
-        ));
+            .push(FastGraphEdge::new(0, 1, 2, 2.0, INVALID_EDGE, INVALID_EDGE));
+        g.edges_fwd.push(FastGraphEdge::new(0, 2, 5, 5.0, 0, 0));
+        g.edges_bwd
+            .push(FastGraphEdge::new(2, 1, 3, 3.0, INVALID_EDGE, INVALID_EDGE));
         g.first_edge_ids_fwd = vec![0, 2, 0, 0];
         let mut nodes = vec![];
         PathCalculator::unpack_fwd(&g, &mut nodes, 1, false);
